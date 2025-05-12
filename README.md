@@ -21,6 +21,5 @@ python3 -m venv venv
 ## Usage
 ```shell
 ./venv/bin/python3 src/main.py https://example.com/
-
 ```
 

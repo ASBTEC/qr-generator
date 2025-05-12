@@ -3,9 +3,10 @@ import sys
 
 def main():
     if len(sys.argv) != 2:
-        print("Usage: python qrgen.py <url>")
+        print("Usage: python main.py <url>")
         sys.exit(1)
 
+    # len(sys.argv) == 2
     url = sys.argv[1]
 
     qr = qrcode.QRCode(
