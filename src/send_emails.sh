@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+# Usage
+# Arg1: email value
+# Arg2: relative path to qr file
+
+email_value="$1"
+relative_path_to_qr="$2"
+
+print_args()
+{
+  echo "from: $EMAIL_USERNAME"
+  echo "to: $email_value"
+  echo "pass: **"
+  echo "Relative path to QR: $relative_path_to_qr"
+}
+
+PROJECT_FOLDER="$(cd "$(dirname "$(realpath "$0")")/../" &>/dev/null && pwd)"
+
+curl -v --url 'smtps://smtp.gmail.com:465' \
+  --ssl-reqd \
+  --mail-from "${EMAIL_USERNAME}" \
+  --mail-rcpt "${email_value}" \
+  --mail-rcpt "${EMAIL_USERNAME}" \
+  --mail-rcpt "informatica@asbtec.cat" \
+  --user "${EMAIL_USERNAME}:${EMAIL_PASSWORD}" \
+  -F '=(;type=multipart/mixed' \
+  -F "=Hola
+
+Aquí tens el QR que has sol·licitat amb formulari a la vocalia d'informàtica.
+
+Aquest missatge ha estat generat automàticament. Per a qualsevol dubte o incidència, pots contactar-nos a informatica@asbtec.cat.
+
+Fins aviat!
+
+Atentament,
+
+A
+
+
+;type=text/plain" \
+    -F "file=@${PROJECT_FOLDER}/pdfs/${cert_id}.pdf;type=text/html;encoder=base64" \
+    -F '=)' \
+    -H "Subject: Recepció del teu QR" \
+    -H "From: Informatica ASBTEC <informatica@asbtec.cat>" \
+    -H "To: ${EMAIL_USERNAME} <${EMAIL_USERNAME}>"

@@ -1,0 +1,33 @@
+name: Build_and_send_QR
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: 'URL to encode in the QR'
+        required: true
+      email:
+        description: 'Email where we will send the QR'
+        required: true
+
+env:
+  GH_ACTIONS_ENV: true
+  EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
+  EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+
+jobs:
+  build_and_send_qr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Render QR
+        run: |
+          python ./src/main.py ${{ github.event.inputs.url }}
+
+      - name: Send email
+        run: |
+          chmod u+x src/send_emails.sh 
+          ./src/send_emails.sh ${{ github.event.inputs.email }} qr.png
+          
