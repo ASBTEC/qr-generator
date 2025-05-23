@@ -5,14 +5,12 @@
 # Arg2: relative path to qr file
 
 email_value="$1"
-relative_path_to_qr="$2"
 
 print_args()
 {
   echo "from: $EMAIL_USERNAME"
   echo "to: $email_value"
   echo "pass: **"
-  echo "Relative path to QR: $relative_path_to_qr"
 }
 
 PROJECT_FOLDER="$(cd "$(dirname "$(realpath "$0")")/../" &>/dev/null && pwd)"
@@ -39,7 +37,7 @@ A
 
 
 ;type=text/plain" \
-    -F "file=@${PROJECT_FOLDER}/pdfs/${cert_id}.pdf;type=text/html;encoder=base64" \
+    -F "file=@${PROJECT_FOLDER}/qr.png;type=text/html;encoder=base64" \
     -F '=)' \
     -H "Subject: Recepció del teu QR" \
     -H "From: Informatica ASBTEC <informatica@asbtec.cat>" \

@@ -39,5 +39,5 @@ jobs:
       - name: Send email
         run: |
           chmod u+x src/send_emails.sh 
-          ./src/send_emails.sh ${{ github.event.inputs.email }} qr.png
+          ./src/send_emails.sh ${{ github.event.inputs.email }}
           
