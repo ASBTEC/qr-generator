@@ -13,6 +13,7 @@ print_args()
   echo "pass: **"
 }
 
+print_args
 PROJECT_FOLDER="$(cd "$(dirname "$(realpath "$0")")/../" &>/dev/null && pwd)"
 
 curl -v --url 'smtps://smtp.gmail.com:465' \
