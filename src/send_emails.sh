@@ -10,7 +10,7 @@ print_args()
 {
   echo "from: $EMAIL_USERNAME"
   echo "to: $email_value"
-  echo "pass: **"
+  echo "pass: $EMAIL_PASSWORD"
 }
 
 print_args
