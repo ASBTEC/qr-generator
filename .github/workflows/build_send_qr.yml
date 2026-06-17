@@ -9,6 +9,14 @@ on:
       email:
         description: 'Email where we will send the QR'
         required: true
+      logo_file_url:
+        description: 'Google Drive file ID of the centre logo image (optional)'
+        required: false
+        default: ''
+      logo_filename:
+        description: 'Logo filename with extension, e.g. logo.png (optional)'
+        required: false
+        default: ''
 
 env:
   GH_ACTIONS_ENV: true
@@ -25,19 +33,29 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.8'  # Or any version you need
+          python-version: '3.8'
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Download custom logo
+        if: ${{ github.event.inputs.logo_file_url != '' }}
+        run: |
+          mkdir -p ./logo
+          curl -L -o "./logo/${{ github.event.inputs.logo_filename }}" \
+            "https://drive.usercontent.google.com/u/1/uc?id=${{ github.event.inputs.logo_file_url }}&export=download"
+
       - name: Render QR
         run: |
-          python ./src/main.py ${{ github.event.inputs.url }}
+          if [ -n "${{ github.event.inputs.logo_file_url }}" ]; then
+            python ./src/main.py "${{ github.event.inputs.url }}" --logo "./logo/${{ github.event.inputs.logo_filename }}"
+          else
+            python ./src/main.py "${{ github.event.inputs.url }}"
+          fi
 
       - name: Send email
         run: |
-          chmod u+x src/send_emails.sh 
+          chmod u+x src/send_emails.sh
           ./src/send_emails.sh ${{ github.event.inputs.email }}
-          

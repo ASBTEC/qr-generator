@@ -1,18 +1,18 @@
+import argparse
 import os
 import qrcode
-import sys
 from PIL import Image
 
-LOGO_PATH = os.path.join(os.path.dirname(__file__), "..", "static", "ASBTEC.jpg")
+DEFAULT_LOGO_PATH = os.path.join(os.path.dirname(__file__), "..", "static", "ASBTEC.jpg")
 LOGO_SCALE = 0.3  # logo occupies 30% of the QR code width/height
 
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python main.py <url>")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(description="Generate a QR code with an optional centre logo.")
+    parser.add_argument("url", help="URL to encode in the QR")
+    parser.add_argument("--logo", default=None, help="Path to logo image (defaults to static/ASBTEC.jpg)")
+    args = parser.parse_args()
 
-    # len(sys.argv) == 2
-    url = sys.argv[1]
+    logo_path = args.logo if args.logo else DEFAULT_LOGO_PATH
 
     qr = qrcode.QRCode(
         version=1,
@@ -20,13 +20,13 @@ def main():
         box_size=10,
         border=4,
     )
-    qr.add_data(url)
+    qr.add_data(args.url)
     qr.make(fit=True)
 
     img = qr.make_image(fill_color="black", back_color="white").convert("RGB")
 
     # Overlay the logo in the centre
-    logo = Image.open(LOGO_PATH).convert("RGBA")
+    logo = Image.open(logo_path).convert("RGBA")
     qr_w, qr_h = img.size
     logo_size = int(min(qr_w, qr_h) * LOGO_SCALE)
     logo = logo.resize((logo_size, logo_size), Image.LANCZOS)
@@ -35,7 +35,7 @@ def main():
 
     filename = "qr.png"
     img.save(filename)
-    print(f"QR code saved to '{filename}' for URL: {url}")
+    print(f"QR code saved to '{filename}' for URL: {args.url}")
 
 if __name__ == "__main__":
     main()
