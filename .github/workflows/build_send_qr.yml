@@ -42,11 +42,24 @@ jobs:
           mkdir -p ./logo
           curl -L -o "./logo/custom_logo" \
             "https://drive.usercontent.google.com/u/1/uc?id=${{ github.event.inputs.logo_file_url }}&export=download"
+          MIME=$(file --mime-type -b ./logo/custom_logo)
+          echo "Downloaded MIME type: $MIME"
+          case "$MIME" in
+            image/jpeg) EXT=".jpg"  ;;
+            image/png)  EXT=".png"  ;;
+            image/gif)  EXT=".gif"  ;;
+            image/webp) EXT=".webp" ;;
+            image/bmp)  EXT=".bmp"  ;;
+            image/tiff) EXT=".tiff" ;;
+            *) echo "ERROR: expected an image, got $MIME"; head -c 256 ./logo/custom_logo; exit 1 ;;
+          esac
+          mv "./logo/custom_logo" "./logo/custom_logo${EXT}"
+          echo "LOGO_PATH=./logo/custom_logo${EXT}" >> $GITHUB_ENV
 
       - name: Render QR
         run: |
           if [ -n "${{ github.event.inputs.logo_file_url }}" ]; then
-            python ./src/main.py "${{ github.event.inputs.url }}" --logo "./logo/custom_logo"
+            python ./src/main.py "${{ github.event.inputs.url }}" --logo "$LOGO_PATH"
           else
             python ./src/main.py "${{ github.event.inputs.url }}"
           fi
