@@ -23,22 +23,22 @@ function extractDriveFileId(raw) {
 }
 
 function onFormSubmit(e) {
-  console.log(e);
   const values = e.values;
+  console.log('[qr-gen] values length:', values.length);
+  console.log('[qr-gen] values:', JSON.stringify(values));
 
-  // Column order: Timestamp | URL | Email | Logo (optional file upload)
+  // Column order: Timestamp | URL | Email | (empty) | Logo (optional file upload)
   const url      = values[1];
   const email    = values[2];
-  const logoRaw  = values[3] || '';
+  const logoRaw  = values[4] || '';
+  console.log('[qr-gen] logoRaw (values[4]):', logoRaw);
 
   const logo_file_url  = extractDriveFileId(logoRaw) || '';
-  const logo_filename  = logo_file_url
-    ? DriveApp.getFileById(logo_file_url).getName()
-    : '';
+  console.log('[qr-gen] extracted logo_file_url:', logo_file_url);
 
   const endpoint = `https://api.github.com/repos/${GITHUB_REPO}/actions/workflows/${WORKFLOW_FILE}/dispatches`;
 
-  const inputs = { url, email, logo_file_url, logo_filename };
+  const inputs = { url, email, logo_file_url };
 
   const payload = {
     ref: GITHUB_REF,
@@ -67,6 +67,7 @@ function testDispatch() {
       "2025-04-17 12:34:00",
       "https://linkedin.com/in/creilla",
       "amarine@asbtec.cat",
+      "",  // empty column (index 3)
       ""   // no logo
     ]
   };
@@ -80,7 +81,8 @@ function testDispatchWithLogo() {
       "2025-04-17 12:34:00",
       "https://linkedin.com/in/creilla",
       "amarine@asbtec.cat",
-      "https://drive.google.com/open?id=1A2B3C4D5E6F7G8H9I0J1K2L3M4N5O6P"
+      "",  // empty column (index 3)
+      "https://drive.google.com/open?id=1WpgQsJa88OOoJ4oSQUUxDpOd2Pxosi3E"
     ]
   };
   onFormSubmit(fakeEvent);

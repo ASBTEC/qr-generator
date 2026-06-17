@@ -13,10 +13,6 @@ on:
         description: 'Google Drive file ID of the centre logo image (optional)'
         required: false
         default: ''
-      logo_filename:
-        description: 'Logo filename with extension, e.g. logo.png (optional)'
-        required: false
-        default: ''
 
 env:
   GH_ACTIONS_ENV: true
@@ -44,13 +40,13 @@ jobs:
         if: ${{ github.event.inputs.logo_file_url != '' }}
         run: |
           mkdir -p ./logo
-          curl -L -o "./logo/${{ github.event.inputs.logo_filename }}" \
+          curl -L -o "./logo/custom_logo" \
             "https://drive.usercontent.google.com/u/1/uc?id=${{ github.event.inputs.logo_file_url }}&export=download"
 
       - name: Render QR
         run: |
           if [ -n "${{ github.event.inputs.logo_file_url }}" ]; then
-            python ./src/main.py "${{ github.event.inputs.url }}" --logo "./logo/${{ github.event.inputs.logo_filename }}"
+            python ./src/main.py "${{ github.event.inputs.url }}" --logo "./logo/custom_logo"
           else
             python ./src/main.py "${{ github.event.inputs.url }}"
           fi
